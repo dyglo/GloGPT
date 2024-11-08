@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, MessageSquare, FolderKanban, FileText, Users, History, Settings, HelpCircle, Sun, Moon, Paperclip, Mic, Send, ChevronRight } from 'lucide-react'
+import { Search, MessageSquare, Menu, FolderKanban, FileText, Users, History, Settings, HelpCircle, Sun, Moon, Paperclip, Mic, Send, ChevronRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 
@@ -43,6 +43,28 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isDarkMode, setIsDarkMode] = useState(false)
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    handleResize() // Set initial state
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,6 +136,9 @@ export default function Home() {
     if (chat) {
       setMessages(chat.messages);
     }
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const toggleTheme = () => {
@@ -130,7 +155,6 @@ export default function Home() {
       localStorage.setItem('theme', 'dark')
     }
   }
-
 
   return (
     <div className={`h-screen flex ${isDarkMode ? 'dark' : ''}`}>
@@ -156,10 +180,10 @@ export default function Home() {
           </div>
 
           {/* Navigation */}
-          <nav className="space-y-1 flex-1">
+          <nav className="space-y-1 flex-1 overflow-y-auto">
             <button 
               onClick={handleNewChat}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
             >
               <MessageSquare className="h-4 w-4" />
               New Chat
@@ -173,7 +197,7 @@ export default function Home() {
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left ${
                     chat.id === currentChatId 
                       ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' 
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                   } rounded-lg`}
                 >
                   <MessageSquare className="h-4 w-4 flex-shrink-0" />
@@ -185,11 +209,11 @@ export default function Home() {
 
           {/* Settings & Help */}
           <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-1">
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
               <Settings className="h-4 w-4" />
               Settings
             </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
               <HelpCircle className="h-4 w-4" />
               Help
             </button>
@@ -199,7 +223,7 @@ export default function Home() {
           <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
             <button
               onClick={toggleTheme}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
             >
               {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {isDarkMode ? 'Light Mode' : 'Dark Mode'}
@@ -222,15 +246,15 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
             >
-              <MessageSquare className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+              <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
             </button>
             <span className="font-semibold text-gray-900 dark:text-white">TafChat</span>
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
           >
             {isDarkMode ? <Sun className="h-5 w-5 text-gray-700 dark:text-gray-200" /> : <Moon className="h-5 w-5 text-gray-700 dark:text-gray-200" />}
           </button>
@@ -245,7 +269,7 @@ export default function Home() {
                 Get started by TafChat AI task and Chat can do the rest. Not sure where to start?
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl">
-                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl hover:shadow-lg transition-shadow">
+                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl hover:shadow-lg transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
                     <FileText className="h-5 w-5 text-yellow-600" />
                   </div>
@@ -254,7 +278,7 @@ export default function Home() {
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
                 </button>
-                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl hover:shadow-lg transition-shadow">
+                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl hover:shadow-lg transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                     <MessageSquare className="h-5 w-5 text-blue-600" />
                   </div>
@@ -263,7 +287,7 @@ export default function Home() {
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
                 </button>
-                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl hover:shadow-lg transition-shadow">
+                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl hover:shadow-lg transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                     <Users className="h-5 w-5 text-green-600" />
                   </div>
@@ -272,7 +296,7 @@ export default function Home() {
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
                 </button>
-                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl hover:shadow-lg transition-shadow">
+                <button className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl hover:shadow-lg transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
                     <FileText className="h-5 w-5 text-purple-600" />
                   </div>
@@ -293,8 +317,8 @@ export default function Home() {
                   <div
                     className={`max-w-[80%] rounded-lg p-4 ${
                       message.role === 'user'
-                        ? 'bg-primary text-white dark:text-white'
-                        : 'bg-white dark:bg-gray-900 prose dark:prose-invert prose-sm max-w-none'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-white dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none'
                     }`}
                   >
                     {message.role === 'user' ? (
@@ -325,7 +349,7 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Message TafChat..."
-                className="w-full pl-4 pr-32 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-gray-900 dark:text-white"
+                className="w-full pl-4 pr-32 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-gray-900 dark:text-white"
               />
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
                 <button type="button" className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
